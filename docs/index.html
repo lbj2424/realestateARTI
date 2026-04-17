@@ -81,6 +81,20 @@
       content: ' ✏️';
       font-size: 10px;
     }
+    .session-card.is-notepad { border-left: 3px solid #6c63ff; }
+    .new-notepad-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 1px dashed #3a3a55;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: all 0.15s;
+    }
+    .new-notepad-btn:hover { border-color: #6c63ff; color: #9d97ff; }
     .detail-panel { min-height: 400px; }
     .empty-state { color: var(--muted); text-align: center; padding: 80px 20px; font-size: 15px; }
     .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
@@ -181,6 +195,7 @@
 
 <main>
   <div class="sessions-panel">
+    <button class="new-notepad-btn" onclick="createNotepad()">+ New Notepad</button>
     <div class="panel-title">All Sessions</div>
     <div id="sessionList"><div class="loading">Loading</div></div>
   </div>
@@ -223,8 +238,48 @@ async function loadSessions() {
       transcript: fv(f.transcript) || '',
       summary:   fv(f.summary) || '',
       notes:     fv(f.notes) || '',
+      isNotepad: f.isNotepad?.booleanValue || false,
     };
   }).sort((a, b) => b.timestamp - a.timestamp);
+}
+
+async function createNotepad() {
+  const title = prompt('Notepad title:', 'My Notes');
+  if (!title) return;
+
+  const now = Date.now();
+  const date = new Date(now).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  const url = `${FIRESTORE_BASE}/sessions?key=${FIREBASE_API_KEY}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fields: {
+        title:     { stringValue: title },
+        date:      { stringValue: date },
+        timestamp: { integerValue: String(now) },
+        wordCount: { integerValue: '0' },
+        transcript: { stringValue: '' },
+        summary:   { stringValue: '' },
+        notes:     { stringValue: '' },
+        isNotepad: { booleanValue: true },
+      }
+    })
+  });
+
+  const doc = await res.json();
+  const nameParts = doc.name.split('/');
+  const newSession = {
+    id: nameParts[nameParts.length - 1],
+    title, date, timestamp: now,
+    wordCount: 0, transcript: '', summary: '', notes: '',
+    isNotepad: true,
+  };
+
+  allSessions.unshift(newSession);
+  renderSessionList(allSessions);
+  selectSession(newSession.id);
 }
 
 async function saveNotes(sessionId, notes) {
@@ -259,11 +314,11 @@ function renderSessionList(sessions) {
     return;
   }
   list.innerHTML = sessions.map(s => `
-    <div class="session-card ${s.id === activeId ? 'active' : ''} ${s.notes ? 'has-notes' : ''}" onclick="selectSession('${s.id}')">
-      <div class="session-card-title">${s.title}</div>
+    <div class="session-card ${s.id === activeId ? 'active' : ''} ${s.notes ? 'has-notes' : ''} ${s.isNotepad ? 'is-notepad' : ''}" onclick="selectSession('${s.id}')">
+      <div class="session-card-title">${s.isNotepad ? '📓 ' : ''}${s.title}</div>
       <div class="session-card-meta">
         <span>${s.date}</span>
-        <span class="words">${s.wordCount.toLocaleString()} words</span>
+        ${s.isNotepad ? '<span style="color:#9d97ff">notepad</span>' : `<span class="words">${s.wordCount.toLocaleString()} words</span>`}
       </div>
     </div>
   `).join('');
@@ -288,18 +343,25 @@ function selectSession(id) {
       <span>${session.wordCount.toLocaleString()} words</span>
     </div>
     <div class="tabs">
-      <button class="tab active" onclick="showTab('summary', this)">📋 Study Notes</button>
-      <button class="tab" onclick="showTab('notes', this)">✏️ My Notes</button>
-      <button class="tab" onclick="showTab('transcript', this)">📝 Transcript</button>
+      ${session.isNotepad ? '' : '<button class="tab" onclick="showTab(\'summary\', this)">📋 Study Notes</button>'}
+      <button class="tab ${session.isNotepad ? 'active' : ''}" onclick="showTab('notes', this)">✏️ My Notes</button>
+      ${session.isNotepad ? '' : '<button class="tab" onclick="showTab(\'transcript\', this)">📝 Transcript</button>'}
     </div>
     <div id="tabContent">
-      <div class="content-box summary">${renderSummaryHtml(session.summary)}</div>
+      ${session.isNotepad
+        ? ''
+        : `<div class="content-box summary">${renderSummaryHtml(session.summary)}</div>`}
     </div>
-    <button class="copy-btn" id="copyBtn" onclick="copyActive()">Copy to clipboard</button>
+    <button class="copy-btn" id="copyBtn" onclick="copyActive()" ${session.isNotepad ? 'style="display:none"' : ''}>Copy to clipboard</button>
   `;
 
   // Store notes for tab switching
   panel.dataset.notes = session.notes || '';
+
+  // Notepads open directly to the notes editor
+  if (session.isNotepad) {
+    showTab('notes', panel.querySelector('.tab.active'));
+  }
 }
 
 function showTab(tab, btn) {
