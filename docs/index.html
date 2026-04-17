@@ -22,8 +22,6 @@
       color: var(--text);
       min-height: 100vh;
     }
-
-    /* Header */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -40,13 +38,7 @@
     .logo span { color: var(--muted); font-weight: 400; font-size: 14px; margin-left: 6px; }
     .stats { font-size: 13px; color: var(--muted); }
     .stats strong { color: var(--gold); }
-
-    /* Search */
-    .search-bar {
-      padding: 24px 32px 0;
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    .search-bar { padding: 24px 32px 0; max-width: 900px; margin: 0 auto; }
     .search-bar input {
       width: 100%;
       padding: 12px 16px;
@@ -60,27 +52,17 @@
     }
     .search-bar input:focus { border-color: var(--gold); }
     .search-bar input::placeholder { color: var(--muted); }
-
-    /* Main layout */
     main {
       max-width: 900px;
       margin: 0 auto;
       padding: 24px 32px 48px;
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 280px 1fr;
       gap: 24px;
       align-items: start;
     }
-
-    /* Session list */
-    .sessions-panel { position: sticky; top: 84px; }
-    .panel-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
+    .sessions-panel { position: sticky; top: 84px; max-height: calc(100vh - 100px); overflow-y: auto; }
+    .panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 12px; }
     .session-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -95,23 +77,18 @@
     .session-card-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
     .session-card-meta { font-size: 11px; color: var(--muted); display: flex; gap: 10px; }
     .session-card-meta .words { color: var(--gold); }
-
-    /* Detail panel */
-    .detail-panel { min-height: 400px; }
-    .empty-state {
-      color: var(--muted);
-      text-align: center;
-      padding: 80px 20px;
-      font-size: 15px;
+    .session-card.has-notes .session-card-title::after {
+      content: ' ✏️';
+      font-size: 10px;
     }
+    .detail-panel { min-height: 400px; }
+    .empty-state { color: var(--muted); text-align: center; padding: 80px 20px; font-size: 15px; }
     .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
-
     .detail-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
     .detail-meta { font-size: 12px; color: var(--muted); margin-bottom: 24px; display: flex; gap: 16px; }
-
-    .tabs { display: flex; gap: 2px; margin-bottom: 20px; }
+    .tabs { display: flex; gap: 2px; margin-bottom: 20px; flex-wrap: wrap; }
     .tab {
-      padding: 8px 20px;
+      padding: 8px 18px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
@@ -123,7 +100,6 @@
     }
     .tab.active { background: var(--gold); color: #000; border-color: var(--gold); }
     .tab:not(.active):hover { border-color: var(--gold); color: var(--text); }
-
     .content-box {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -133,13 +109,44 @@
       line-height: 1.7;
       white-space: pre-wrap;
       word-break: break-word;
-      max-height: 600px;
+      max-height: 560px;
       overflow-y: auto;
     }
-    /* Render markdown-style headers in summary */
     .content-box.summary { white-space: normal; }
+
+    /* Manual notes textarea */
+    .notes-area {
+      width: 100%;
+      min-height: 300px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text);
+      font-family: inherit;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .notes-area:focus { border-color: var(--gold); }
+    .notes-area::placeholder { color: #444; }
+    .notes-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .save-status {
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 18px;
+      transition: color 0.3s;
+    }
+    .save-status.saved { color: var(--green); }
+    .save-status.saving { color: var(--gold); }
     .copy-btn {
-      margin-top: 12px;
       padding: 8px 16px;
       background: var(--surface);
       border: 1px solid var(--border);
@@ -150,19 +157,12 @@
       transition: all 0.15s;
     }
     .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
-
-    /* Loading */
     .loading { color: var(--muted); padding: 40px 0; text-align: center; font-size: 14px; }
     .loading::after { content: ''; animation: dots 1.5s infinite; }
-    @keyframes dots {
-      0%   { content: '.'; }
-      33%  { content: '..'; }
-      66%  { content: '...'; }
-    }
-
+    @keyframes dots { 0% { content: '.'; } 33% { content: '..'; } 66% { content: '...'; } }
     @media (max-width: 700px) {
       main { grid-template-columns: 1fr; padding: 16px; }
-      .sessions-panel { position: static; }
+      .sessions-panel { position: static; max-height: none; }
       header { padding: 0 16px; }
       .search-bar { padding: 16px 16px 0; }
     }
@@ -184,7 +184,6 @@
     <div class="panel-title">All Sessions</div>
     <div id="sessionList"><div class="loading">Loading</div></div>
   </div>
-
   <div class="detail-panel" id="detailPanel">
     <div class="empty-state">
       <div class="icon">📚</div>
@@ -200,6 +199,7 @@ const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_
 
 let allSessions = [];
 let activeId = null;
+let notesDebounce = null;
 
 function fv(field) {
   if (!field) return '';
@@ -210,31 +210,44 @@ async function loadSessions() {
   const url = `${FIRESTORE_BASE}/sessions?key=${FIREBASE_API_KEY}&pageSize=200`;
   const res = await fetch(url);
   const data = await res.json();
-
   if (!data.documents) return [];
-
   return data.documents.map(doc => {
     const f = doc.fields || {};
     const nameParts = doc.name.split('/');
     return {
       id: nameParts[nameParts.length - 1],
-      title: fv(f.title) || 'Untitled',
-      date: fv(f.date) || '',
+      title:     fv(f.title) || 'Untitled',
+      date:      fv(f.date) || '',
       timestamp: parseInt(fv(f.timestamp) || '0'),
       wordCount: parseInt(fv(f.wordCount) || '0'),
       transcript: fv(f.transcript) || '',
-      summary: fv(f.summary) || '',
+      summary:   fv(f.summary) || '',
+      notes:     fv(f.notes) || '',
     };
   }).sort((a, b) => b.timestamp - a.timestamp);
 }
 
+async function saveNotes(sessionId, notes) {
+  const url = `${FIRESTORE_BASE}/sessions/${sessionId}?updateMask.fieldPaths=notes&key=${FIREBASE_API_KEY}`;
+  await fetch(url, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: { notes: { stringValue: notes } } })
+  });
+  // Update local cache
+  const session = allSessions.find(s => s.id === sessionId);
+  if (session) {
+    session.notes = notes;
+    renderSessionList(filterSessions(document.getElementById('searchInput').value));
+  }
+}
+
 function renderSummaryHtml(text) {
-  // Simple markdown-to-HTML for headers and bullets
   return text
     .replace(/^### (.+)$/gm, '<h3 style="color:#c9a227;margin:16px 0 6px;font-size:14px;">$1</h3>')
     .replace(/^## (.+)$/gm, '<h2 style="color:#c9a227;margin:20px 0 8px;font-size:16px;border-bottom:1px solid #2a2a40;padding-bottom:6px;">$1</h2>')
     .replace(/^# (.+)$/gm, '<h1 style="color:#c9a227;margin:20px 0 10px;font-size:18px;">$1</h1>')
-    .replace(/^\*\*(.+?)\*\*/gm, '<strong>$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/^- (.+)$/gm, '<li style="margin:4px 0 4px 16px;">$1</li>')
     .replace(/\n\n/g, '<br><br>');
 }
@@ -246,7 +259,7 @@ function renderSessionList(sessions) {
     return;
   }
   list.innerHTML = sessions.map(s => `
-    <div class="session-card ${s.id === activeId ? 'active' : ''}" onclick="selectSession('${s.id}')">
+    <div class="session-card ${s.id === activeId ? 'active' : ''} ${s.notes ? 'has-notes' : ''}" onclick="selectSession('${s.id}')">
       <div class="session-card-title">${s.title}</div>
       <div class="session-card-meta">
         <span>${s.date}</span>
@@ -264,6 +277,10 @@ function selectSession(id) {
   renderSessionList(filterSessions(document.getElementById('searchInput').value));
 
   const panel = document.getElementById('detailPanel');
+  panel.dataset.transcript = session.transcript;
+  panel.dataset.summary = session.summary;
+  panel.dataset.sessionId = session.id;
+
   panel.innerHTML = `
     <div class="detail-title">${session.title}</div>
     <div class="detail-meta">
@@ -272,17 +289,17 @@ function selectSession(id) {
     </div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('summary', this)">📋 Study Notes</button>
-      <button class="tab" onclick="showTab('transcript', this)">📝 Full Transcript</button>
+      <button class="tab" onclick="showTab('notes', this)">✏️ My Notes</button>
+      <button class="tab" onclick="showTab('transcript', this)">📝 Transcript</button>
     </div>
     <div id="tabContent">
-      <div class="content-box summary" id="summaryContent">${renderSummaryHtml(session.summary)}</div>
+      <div class="content-box summary">${renderSummaryHtml(session.summary)}</div>
     </div>
-    <button class="copy-btn" onclick="copyActive()">Copy to clipboard</button>
+    <button class="copy-btn" id="copyBtn" onclick="copyActive()">Copy to clipboard</button>
   `;
 
-  // Store for tab switching
-  panel.dataset.transcript = session.transcript;
-  panel.dataset.summary = session.summary;
+  // Store notes for tab switching
+  panel.dataset.notes = session.notes || '';
 }
 
 function showTab(tab, btn) {
@@ -291,20 +308,49 @@ function showTab(tab, btn) {
 
   const panel = document.getElementById('detailPanel');
   const content = document.getElementById('tabContent');
+  const copyBtn = document.getElementById('copyBtn');
 
   if (tab === 'summary') {
     content.innerHTML = `<div class="content-box summary">${renderSummaryHtml(panel.dataset.summary)}</div>`;
-  } else {
+    copyBtn.style.display = 'inline-block';
+  } else if (tab === 'transcript') {
     content.innerHTML = `<div class="content-box">${panel.dataset.transcript}</div>`;
+    copyBtn.style.display = 'inline-block';
+  } else if (tab === 'notes') {
+    copyBtn.style.display = 'none';
+    content.innerHTML = `
+      <textarea
+        class="notes-area"
+        id="notesTextarea"
+        placeholder="Type your own notes here — questions, things to remember, connections to other lessons...&#10;&#10;Auto-saves as you type."
+      >${panel.dataset.notes}</textarea>
+      <div class="notes-footer">
+        <span class="save-status" id="saveStatus"></span>
+      </div>
+    `;
+
+    document.getElementById('notesTextarea').addEventListener('input', (e) => {
+      const status = document.getElementById('saveStatus');
+      status.textContent = 'Saving...';
+      status.className = 'save-status saving';
+      panel.dataset.notes = e.target.value;
+
+      clearTimeout(notesDebounce);
+      notesDebounce = setTimeout(async () => {
+        await saveNotes(panel.dataset.sessionId, e.target.value);
+        status.textContent = '✓ Saved';
+        status.className = 'save-status saved';
+        setTimeout(() => { status.textContent = ''; status.className = 'save-status'; }, 2000);
+      }, 800);
+    });
   }
 }
 
 function copyActive() {
   const box = document.querySelector('.content-box');
   if (!box) return;
-  const text = box.innerText || box.textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.querySelector('.copy-btn');
+  navigator.clipboard.writeText(box.innerText || box.textContent).then(() => {
+    const btn = document.getElementById('copyBtn');
     btn.textContent = '✓ Copied!';
     setTimeout(() => btn.textContent = 'Copy to clipboard', 2000);
   });
@@ -316,7 +362,8 @@ function filterSessions(query) {
   return allSessions.filter(s =>
     s.title.toLowerCase().includes(q) ||
     s.transcript.toLowerCase().includes(q) ||
-    s.summary.toLowerCase().includes(q)
+    s.summary.toLowerCase().includes(q) ||
+    s.notes.toLowerCase().includes(q)
   );
 }
 
@@ -324,12 +371,10 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   renderSessionList(filterSessions(e.target.value));
 });
 
-// Init
 (async () => {
   try {
     allSessions = await loadSessions();
     renderSessionList(allSessions);
-
     const totalWords = allSessions.reduce((sum, s) => sum + s.wordCount, 0);
     document.getElementById('headerStats').innerHTML =
       `<strong>${allSessions.length}</strong> lessons &nbsp;·&nbsp; <strong>${totalWords.toLocaleString()}</strong> words`;
