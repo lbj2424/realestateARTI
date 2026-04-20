@@ -6,170 +6,79 @@
   <title>ARTI Study Notes</title>
   <style>
     :root {
-      --bg: #0f0f1a;
-      --surface: #1a1a2e;
-      --border: #2a2a40;
-      --gold: #c9a227;
-      --text: #e8e8e8;
-      --muted: #777;
-      --green: #2ecc71;
-      --red: #e74c3c;
+      --bg: #0f0f1a; --surface: #1a1a2e; --border: #2a2a40;
+      --gold: #c9a227; --text: #e8e8e8; --muted: #777;
+      --green: #2ecc71; --red: #e74c3c; --purple: #6c63ff;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 60px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 10; }
     .logo { font-size: 22px; font-weight: 800; color: var(--gold); letter-spacing: -0.5px; }
     .logo span { color: var(--muted); font-weight: 400; font-size: 14px; margin-left: 6px; }
     .stats { font-size: 13px; color: var(--muted); }
     .stats strong { color: var(--gold); }
     .search-bar { padding: 24px 32px 0; max-width: 900px; margin: 0 auto; }
-    .search-bar input {
-      width: 100%;
-      padding: 12px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+    .search-bar input { width: 100%; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; outline: none; transition: border-color 0.2s; }
     .search-bar input:focus { border-color: var(--gold); }
     .search-bar input::placeholder { color: var(--muted); }
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 24px 32px 48px;
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
+    main { max-width: 900px; margin: 0 auto; padding: 24px 32px 48px; display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start; }
     .sessions-panel { position: sticky; top: 84px; max-height: calc(100vh - 100px); overflow-y: auto; }
     .panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 12px; }
-    .session-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-    }
+    .session-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
     .session-card:hover { border-color: var(--gold); }
     .session-card.active { border-color: var(--gold); background: #1f1f35; }
     .session-card-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
     .session-card-meta { font-size: 11px; color: var(--muted); display: flex; gap: 10px; }
     .session-card-meta .words { color: var(--gold); }
-    .session-card.has-notes .session-card-title::after {
-      content: ' ✏️';
-      font-size: 10px;
-    }
-    .session-card.is-notepad { border-left: 3px solid #6c63ff; }
-    .new-notepad-btn {
-      width: 100%;
-      padding: 10px;
-      background: transparent;
-      border: 1px dashed #3a3a55;
-      border-radius: 10px;
-      color: var(--muted);
-      font-size: 13px;
-      cursor: pointer;
-      margin-bottom: 16px;
-      transition: all 0.15s;
-    }
-    .new-notepad-btn:hover { border-color: #6c63ff; color: #9d97ff; }
+    .session-card.has-notes .session-card-title::after { content: ' ✏️'; font-size: 10px; }
+    .session-card.is-notepad { border-left: 3px solid var(--purple); }
+    .new-notepad-btn { width: 100%; padding: 10px; background: transparent; border: 1px dashed #3a3a55; border-radius: 10px; color: var(--muted); font-size: 13px; cursor: pointer; margin-bottom: 16px; transition: all 0.15s; }
+    .new-notepad-btn:hover { border-color: var(--purple); color: #9d97ff; }
     .detail-panel { min-height: 400px; }
     .empty-state { color: var(--muted); text-align: center; padding: 80px 20px; font-size: 15px; }
     .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
     .detail-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
     .detail-meta { font-size: 12px; color: var(--muted); margin-bottom: 24px; display: flex; gap: 16px; }
     .tabs { display: flex; gap: 2px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab {
-      padding: 8px 18px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      transition: all 0.15s;
-    }
+    .tab { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.15s; }
     .tab.active { background: var(--gold); color: #000; border-color: var(--gold); }
     .tab:not(.active):hover { border-color: var(--gold); color: var(--text); }
-    .content-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 24px;
-      font-size: 14px;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 560px;
-      overflow-y: auto;
-    }
+    .content-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; max-height: 560px; overflow-y: auto; }
     .content-box.summary { white-space: normal; }
-
-    /* Manual notes textarea */
-    .notes-area {
-      width: 100%;
-      min-height: 300px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      font-size: 14px;
-      line-height: 1.7;
-      color: var(--text);
-      font-family: inherit;
-      resize: vertical;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+    .notes-area { width: 100%; min-height: 220px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; font-size: 14px; line-height: 1.7; color: var(--text); font-family: inherit; resize: vertical; outline: none; transition: border-color 0.2s; }
     .notes-area:focus { border-color: var(--gold); }
     .notes-area::placeholder { color: #444; }
-    .notes-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
-    .save-status {
-      font-size: 12px;
-      color: var(--muted);
-      min-height: 18px;
-      transition: color 0.3s;
-    }
+    .notes-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; margin-bottom: 20px; }
+    .save-status { font-size: 12px; color: var(--muted); min-height: 18px; transition: color 0.3s; }
     .save-status.saved { color: var(--green); }
     .save-status.saving { color: var(--gold); }
-    .copy-btn {
-      padding: 8px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--muted);
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+
+    /* Image section */
+    .images-section { margin-top: 4px; }
+    .images-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .images-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .upload-btn { padding: 6px 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-size: 12px; cursor: pointer; transition: all 0.15s; }
+    .upload-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .drop-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 20px; text-align: center; font-size: 13px; color: var(--muted); transition: all 0.2s; cursor: pointer; margin-bottom: 12px; }
+    .drop-zone.drag-over { border-color: var(--gold); background: rgba(201,162,39,0.05); color: var(--gold); }
+    .drop-zone.has-images { display: none; }
+    .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .image-thumb { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; background: var(--surface); }
+    .image-thumb img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s; }
+    .image-thumb:hover img { opacity: 0.7; }
+    .image-thumb .del-btn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; width: 22px; height: 22px; color: #fff; font-size: 12px; cursor: pointer; display: none; align-items: center; justify-content: center; line-height: 1; }
+    .image-thumb:hover .del-btn { display: flex; }
+    .add-more-thumb { border: 2px dashed var(--border); border-radius: 8px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .add-more-thumb:hover { border-color: var(--gold); color: var(--gold); }
+    .uploading-indicator { font-size: 12px; color: var(--gold); margin-top: 8px; min-height: 18px; }
+
+    /* Lightbox */
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
+    .lightbox-close { position: absolute; top: 20px; right: 24px; font-size: 32px; color: #fff; cursor: pointer; line-height: 1; }
+
+    .copy-btn { padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-size: 12px; cursor: pointer; transition: all 0.15s; }
     .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
     .loading { color: var(--muted); padding: 40px 0; text-align: center; font-size: 14px; }
     .loading::after { content: ''; animation: dots 1.5s infinite; }
@@ -207,134 +116,146 @@
   </div>
 </main>
 
-<script>
-const FIREBASE_PROJECT = 'arti-2195b';
-const FIREBASE_API_KEY = 'AIzaSyCPLkBhz_xznp9BP46K89pTR-uw2W5NilA';
-const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents`;
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close">×</span>
+  <img id="lightboxImg" src="" alt="">
+</div>
 
-let allSessions = [];
-let activeId = null;
+<!-- Hidden file input -->
+<input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+
+<script>
+const FIREBASE_PROJECT  = 'arti-2195b';
+const FIREBASE_API_KEY  = 'AIzaSyCPLkBhz_xznp9BP46K89pTR-uw2W5NilA';
+const STORAGE_BUCKET    = 'arti-2195b.firebasestorage.app';
+const FIRESTORE_BASE    = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents`;
+const STORAGE_BASE      = `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o`;
+
+let allSessions  = [];
+let activeId     = null;
 let notesDebounce = null;
 
-function fv(field) {
-  if (!field) return '';
-  return field.stringValue ?? field.integerValue ?? '';
-}
+function fv(f) { return f ? (f.stringValue ?? f.integerValue ?? '') : ''; }
+
+// ── Firebase helpers ──────────────────────────────────────────────────────────
 
 async function loadSessions() {
-  const url = `${FIRESTORE_BASE}/sessions?key=${FIREBASE_API_KEY}&pageSize=200`;
-  const res = await fetch(url);
+  const res  = await fetch(`${FIRESTORE_BASE}/sessions?key=${FIREBASE_API_KEY}&pageSize=200`);
   const data = await res.json();
   if (!data.documents) return [];
   return data.documents.map(doc => {
     const f = doc.fields || {};
-    const nameParts = doc.name.split('/');
+    const id = doc.name.split('/').pop();
     return {
-      id: nameParts[nameParts.length - 1],
-      title:     fv(f.title) || 'Untitled',
-      date:      fv(f.date) || '',
+      id,
+      title:     fv(f.title)     || 'Untitled',
+      date:      fv(f.date)      || '',
       timestamp: parseInt(fv(f.timestamp) || '0'),
       wordCount: parseInt(fv(f.wordCount) || '0'),
       transcript: fv(f.transcript) || '',
-      summary:   fv(f.summary) || '',
-      notes:     fv(f.notes) || '',
+      summary:   fv(f.summary)   || '',
+      notes:     fv(f.notes)     || '',
+      images:    f.images?.arrayValue?.values?.map(v => v.stringValue) || [],
       isNotepad: f.isNotepad?.booleanValue || false,
     };
   }).sort((a, b) => b.timestamp - a.timestamp);
 }
 
-async function createNotepad() {
-  const title = prompt('Notepad title:', 'My Notes');
-  if (!title) return;
-
-  const now = Date.now();
-  const date = new Date(now).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-  const url = `${FIRESTORE_BASE}/sessions?key=${FIREBASE_API_KEY}`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      fields: {
-        title:     { stringValue: title },
-        date:      { stringValue: date },
-        timestamp: { integerValue: String(now) },
-        wordCount: { integerValue: '0' },
-        transcript: { stringValue: '' },
-        summary:   { stringValue: '' },
-        notes:     { stringValue: '' },
-        isNotepad: { booleanValue: true },
-      }
-    })
-  });
-
-  const doc = await res.json();
-  const nameParts = doc.name.split('/');
-  const newSession = {
-    id: nameParts[nameParts.length - 1],
-    title, date, timestamp: now,
-    wordCount: 0, transcript: '', summary: '', notes: '',
-    isNotepad: true,
-  };
-
-  allSessions.unshift(newSession);
-  renderSessionList(allSessions);
-  selectSession(newSession.id);
-}
-
-async function saveNotes(sessionId, notes) {
-  const url = `${FIRESTORE_BASE}/sessions/${sessionId}?updateMask.fieldPaths=notes&key=${FIREBASE_API_KEY}`;
-  await fetch(url, {
+async function patchField(sessionId, fieldName, value) {
+  const body = { fields: { [fieldName]: typeof value === 'string'
+    ? { stringValue: value }
+    : { arrayValue: { values: value.map(v => ({ stringValue: v })) } }
+  }};
+  await fetch(`${FIRESTORE_BASE}/sessions/${sessionId}?updateMask.fieldPaths=${fieldName}&key=${FIREBASE_API_KEY}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fields: { notes: { stringValue: notes } } })
+    body: JSON.stringify(body)
   });
-  // Update local cache
-  const session = allSessions.find(s => s.id === sessionId);
-  if (session) {
-    session.notes = notes;
-    renderSessionList(filterSessions(document.getElementById('searchInput').value));
-  }
 }
+
+async function uploadImageToStorage(sessionId, file) {
+  const ext      = file.name.split('.').pop() || 'png';
+  const filename = `images/${sessionId}/${Date.now()}.${ext}`;
+  const encoded  = encodeURIComponent(filename);
+  const url      = `${STORAGE_BASE}?name=${encoded}&uploadType=media&key=${FIREBASE_API_KEY}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': file.type || 'image/png' },
+    body: file
+  });
+  if (!res.ok) throw new Error(`Storage upload failed: ${res.status}`);
+  return `${STORAGE_BASE}/${encoded}?alt=media`;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
 
 function renderSummaryHtml(text) {
   return text
     .replace(/^### (.+)$/gm, '<h3 style="color:#c9a227;margin:16px 0 6px;font-size:14px;">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 style="color:#c9a227;margin:20px 0 8px;font-size:16px;border-bottom:1px solid #2a2a40;padding-bottom:6px;">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 style="color:#c9a227;margin:20px 0 10px;font-size:18px;">$1</h1>')
+    .replace(/^## (.+)$/gm,  '<h2 style="color:#c9a227;margin:20px 0 8px;font-size:16px;border-bottom:1px solid #2a2a40;padding-bottom:6px;">$1</h2>')
+    .replace(/^# (.+)$/gm,   '<h1 style="color:#c9a227;margin:20px 0 10px;font-size:18px;">$1</h1>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^- (.+)$/gm, '<li style="margin:4px 0 4px 16px;">$1</li>')
+    .replace(/^- (.+)$/gm,   '<li style="margin:4px 0 4px 16px;">$1</li>')
     .replace(/\n\n/g, '<br><br>');
 }
 
 function renderSessionList(sessions) {
   const list = document.getElementById('sessionList');
-  if (sessions.length === 0) {
+  if (!sessions.length) {
     list.innerHTML = '<div style="color:#555;font-size:13px;padding:12px 0;">No sessions yet. Record your first lesson!</div>';
     return;
   }
   list.innerHTML = sessions.map(s => `
-    <div class="session-card ${s.id === activeId ? 'active' : ''} ${s.notes ? 'has-notes' : ''} ${s.isNotepad ? 'is-notepad' : ''}" onclick="selectSession('${s.id}')">
-      <div class="session-card-title">${s.isNotepad ? '📓 ' : ''}${s.title}</div>
+    <div class="session-card ${s.id===activeId?'active':''} ${s.notes||s.images?.length?'has-notes':''} ${s.isNotepad?'is-notepad':''}"
+         onclick="selectSession('${s.id}')">
+      <div class="session-card-title">${s.isNotepad?'📓 ':''}${s.title}</div>
       <div class="session-card-meta">
         <span>${s.date}</span>
-        ${s.isNotepad ? '<span style="color:#9d97ff">notepad</span>' : `<span class="words">${s.wordCount.toLocaleString()} words</span>`}
+        ${s.isNotepad
+          ? `<span style="color:#9d97ff">notepad</span>`
+          : `<span class="words">${s.wordCount.toLocaleString()} words</span>`}
+        ${s.images?.length ? `<span style="color:#9d97ff">${s.images.length} 🖼</span>` : ''}
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
+}
+
+function renderImagesSection(session) {
+  const imgs = session.images || [];
+  return `
+    <div class="images-section">
+      <div class="images-header">
+        <span class="images-label">Images & Screenshots</span>
+        <button class="upload-btn" onclick="triggerFileInput()">+ Upload</button>
+      </div>
+      <div class="drop-zone ${imgs.length?'has-images':''}" id="dropZone"
+           ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)"
+           onclick="triggerFileInput()">
+        Drag & drop images here, paste (Ctrl+V), or click to upload
+      </div>
+      <div class="image-grid" id="imageGrid">
+        ${imgs.map((url,i) => `
+          <div class="image-thumb" onclick="openLightbox('${url}')">
+            <img src="${url}" alt="screenshot ${i+1}" loading="lazy">
+            <button class="del-btn" onclick="deleteImage(event,'${session.id}',${i})">×</button>
+          </div>`).join('')}
+        ${imgs.length ? `<div class="add-more-thumb" onclick="triggerFileInput()">+</div>` : ''}
+      </div>
+      <div class="uploading-indicator" id="uploadStatus"></div>
+    </div>`;
 }
 
 function selectSession(id) {
   activeId = id;
   const session = allSessions.find(s => s.id === id);
   if (!session) return;
-
   renderSessionList(filterSessions(document.getElementById('searchInput').value));
 
   const panel = document.getElementById('detailPanel');
   panel.dataset.transcript = session.transcript;
-  panel.dataset.summary = session.summary;
-  panel.dataset.sessionId = session.id;
+  panel.dataset.summary    = session.summary;
+  panel.dataset.sessionId  = session.id;
+  panel.dataset.notes      = session.notes || '';
 
   panel.innerHTML = `
     <div class="detail-title">${session.title}</div>
@@ -343,34 +264,27 @@ function selectSession(id) {
       <span>${session.wordCount.toLocaleString()} words</span>
     </div>
     <div class="tabs">
-      ${session.isNotepad ? '' : '<button class="tab" onclick="showTab(\'summary\', this)">📋 Study Notes</button>'}
-      <button class="tab ${session.isNotepad ? 'active' : ''}" onclick="showTab('notes', this)">✏️ My Notes</button>
-      ${session.isNotepad ? '' : '<button class="tab" onclick="showTab(\'transcript\', this)">📝 Transcript</button>'}
+      ${session.isNotepad ? '' : '<button class="tab" onclick="showTab(\'summary\',this)">📋 Study Notes</button>'}
+      <button class="tab ${session.isNotepad?'active':''}" onclick="showTab('notes',this)">✏️ My Notes</button>
+      ${session.isNotepad ? '' : '<button class="tab" onclick="showTab(\'transcript\',this)">📝 Transcript</button>'}
     </div>
     <div id="tabContent">
-      ${session.isNotepad
-        ? ''
-        : `<div class="content-box summary">${renderSummaryHtml(session.summary)}</div>`}
+      ${session.isNotepad ? '' : `<div class="content-box summary">${renderSummaryHtml(session.summary)}</div>`}
     </div>
-    <button class="copy-btn" id="copyBtn" onclick="copyActive()" ${session.isNotepad ? 'style="display:none"' : ''}>Copy to clipboard</button>
+    <button class="copy-btn" id="copyBtn" onclick="copyActive()" ${session.isNotepad?'style="display:none"':''}>Copy to clipboard</button>
   `;
 
-  // Store notes for tab switching
-  panel.dataset.notes = session.notes || '';
-
-  // Notepads open directly to the notes editor
-  if (session.isNotepad) {
-    showTab('notes', panel.querySelector('.tab.active'));
-  }
+  if (session.isNotepad) showTab('notes', panel.querySelector('.tab.active'));
 }
 
 function showTab(tab, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
 
-  const panel = document.getElementById('detailPanel');
+  const panel   = document.getElementById('detailPanel');
   const content = document.getElementById('tabContent');
   const copyBtn = document.getElementById('copyBtn');
+  const session = allSessions.find(s => s.id === activeId);
 
   if (tab === 'summary') {
     content.innerHTML = `<div class="content-box summary">${renderSummaryHtml(panel.dataset.summary)}</div>`;
@@ -381,32 +295,165 @@ function showTab(tab, btn) {
   } else if (tab === 'notes') {
     copyBtn.style.display = 'none';
     content.innerHTML = `
-      <textarea
-        class="notes-area"
-        id="notesTextarea"
-        placeholder="Type your own notes here — questions, things to remember, connections to other lessons...&#10;&#10;Auto-saves as you type."
+      <textarea class="notes-area" id="notesTextarea"
+        placeholder="Type your notes here — questions, key points, things to memorize...&#10;&#10;You can also paste or upload screenshots below."
       >${panel.dataset.notes}</textarea>
       <div class="notes-footer">
         <span class="save-status" id="saveStatus"></span>
       </div>
+      ${renderImagesSection(session)}
     `;
 
-    document.getElementById('notesTextarea').addEventListener('input', (e) => {
+    // Text auto-save
+    document.getElementById('notesTextarea').addEventListener('input', e => {
       const status = document.getElementById('saveStatus');
-      status.textContent = 'Saving...';
-      status.className = 'save-status saving';
+      status.textContent = 'Saving...'; status.className = 'save-status saving';
       panel.dataset.notes = e.target.value;
-
       clearTimeout(notesDebounce);
       notesDebounce = setTimeout(async () => {
-        await saveNotes(panel.dataset.sessionId, e.target.value);
-        status.textContent = '✓ Saved';
-        status.className = 'save-status saved';
+        await patchField(panel.dataset.sessionId, 'notes', e.target.value);
+        if (session) session.notes = e.target.value;
+        status.textContent = '✓ Saved'; status.className = 'save-status saved';
         setTimeout(() => { status.textContent = ''; status.className = 'save-status'; }, 2000);
       }, 800);
     });
+
+    // Paste image support
+    document.getElementById('notesTextarea').addEventListener('paste', e => {
+      const items = [...(e.clipboardData?.items || [])];
+      const imgItem = items.find(i => i.type.startsWith('image/'));
+      if (imgItem) { e.preventDefault(); handleFiles([imgItem.getAsFile()]); }
+    });
+
+    // Also catch paste anywhere on the page while notes tab is active
+    document.addEventListener('paste', globalPasteHandler);
   }
 }
+
+function globalPasteHandler(e) {
+  if (!document.getElementById('notesTextarea')) {
+    document.removeEventListener('paste', globalPasteHandler);
+    return;
+  }
+  // Only handle if not already handled by textarea
+  if (e.target === document.getElementById('notesTextarea')) return;
+  const items = [...(e.clipboardData?.items || [])];
+  const imgItem = items.find(i => i.type.startsWith('image/'));
+  if (imgItem) handleFiles([imgItem.getAsFile()]);
+}
+
+// ── Image upload handlers ────────────────────────────────────────────────────
+
+function triggerFileInput() {
+  document.getElementById('fileInput').click();
+}
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  handleFiles([...e.target.files]);
+  e.target.value = '';
+});
+
+function onDragOver(e) { e.preventDefault(); document.getElementById('dropZone')?.classList.add('drag-over'); }
+function onDragLeave()  { document.getElementById('dropZone')?.classList.remove('drag-over'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone')?.classList.remove('drag-over');
+  handleFiles([...e.dataTransfer.files].filter(f => f.type.startsWith('image/')));
+}
+
+async function handleFiles(files) {
+  if (!files.length || !activeId) return;
+  const status = document.getElementById('uploadStatus');
+  if (status) { status.textContent = `Uploading ${files.length} image${files.length>1?'s':''}...`; }
+
+  const session = allSessions.find(s => s.id === activeId);
+  if (!session) return;
+
+  for (const file of files) {
+    try {
+      const url = await uploadImageToStorage(activeId, file);
+      session.images = [...(session.images || []), url];
+      await patchField(activeId, 'images', session.images);
+      refreshImageGrid(session);
+    } catch (err) {
+      if (status) status.textContent = 'Upload failed: ' + err.message;
+      return;
+    }
+  }
+
+  if (status) {
+    status.textContent = `✓ ${files.length} image${files.length>1?'s':''} saved`;
+    setTimeout(() => { if (status) status.textContent = ''; }, 2000);
+  }
+  renderSessionList(filterSessions(document.getElementById('searchInput').value));
+}
+
+function refreshImageGrid(session) {
+  const grid     = document.getElementById('imageGrid');
+  const dropZone = document.getElementById('dropZone');
+  if (!grid) return;
+  const imgs = session.images || [];
+  if (dropZone) dropZone.classList.toggle('has-images', imgs.length > 0);
+  grid.innerHTML = imgs.map((url, i) => `
+    <div class="image-thumb" onclick="openLightbox('${url}')">
+      <img src="${url}" alt="screenshot ${i+1}" loading="lazy">
+      <button class="del-btn" onclick="deleteImage(event,'${session.id}',${i})">×</button>
+    </div>`).join('') +
+    (imgs.length ? `<div class="add-more-thumb" onclick="triggerFileInput()">+</div>` : '');
+}
+
+async function deleteImage(e, sessionId, index) {
+  e.stopPropagation();
+  if (!confirm('Remove this image?')) return;
+  const session = allSessions.find(s => s.id === sessionId);
+  if (!session) return;
+  session.images.splice(index, 1);
+  await patchField(sessionId, 'images', session.images);
+  refreshImageGrid(session);
+  renderSessionList(filterSessions(document.getElementById('searchInput').value));
+}
+
+// ── Lightbox ─────────────────────────────────────────────────────────────────
+
+function openLightbox(url) {
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// ── Notepad creation ─────────────────────────────────────────────────────────
+
+async function createNotepad() {
+  const title = prompt('Notepad title:', 'My Notes');
+  if (!title) return;
+  const now  = Date.now();
+  const date = new Date(now).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  const res  = await fetch(`${FIRESTORE_BASE}/sessions?key=${FIREBASE_API_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: {
+      title:     { stringValue: title },
+      date:      { stringValue: date },
+      timestamp: { integerValue: String(now) },
+      wordCount: { integerValue: '0' },
+      transcript: { stringValue: '' },
+      summary:   { stringValue: '' },
+      notes:     { stringValue: '' },
+      images:    { arrayValue: { values: [] } },
+      isNotepad: { booleanValue: true },
+    }})
+  });
+  const doc = await res.json();
+  const newSession = { id: doc.name.split('/').pop(), title, date, timestamp: now, wordCount: 0, transcript: '', summary: '', notes: '', images: [], isNotepad: true };
+  allSessions.unshift(newSession);
+  renderSessionList(allSessions);
+  selectSession(newSession.id);
+}
+
+// ── Misc ─────────────────────────────────────────────────────────────────────
 
 function copyActive() {
   const box = document.querySelector('.content-box');
@@ -429,7 +476,7 @@ function filterSessions(query) {
   );
 }
 
-document.getElementById('searchInput').addEventListener('input', (e) => {
+document.getElementById('searchInput').addEventListener('input', e => {
   renderSessionList(filterSessions(e.target.value));
 });
 
@@ -442,7 +489,7 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
       `<strong>${allSessions.length}</strong> lessons &nbsp;·&nbsp; <strong>${totalWords.toLocaleString()}</strong> words`;
   } catch (err) {
     document.getElementById('sessionList').innerHTML =
-      `<div style="color:#e74c3c;font-size:13px;">Error loading sessions: ${err.message}</div>`;
+      `<div style="color:#e74c3c;font-size:13px;">Error: ${err.message}</div>`;
   }
 })();
 </script>
