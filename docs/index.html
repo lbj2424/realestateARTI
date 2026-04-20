@@ -128,9 +128,7 @@
 <script>
 const FIREBASE_PROJECT  = 'arti-2195b';
 const FIREBASE_API_KEY  = 'AIzaSyCPLkBhz_xznp9BP46K89pTR-uw2W5NilA';
-const STORAGE_BUCKET    = 'arti-2195b.firebasestorage.app';
 const FIRESTORE_BASE    = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT}/databases/(default)/documents`;
-const STORAGE_BASE      = `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o`;
 
 let allSessions  = [];
 let activeId     = null;
@@ -156,7 +154,7 @@ async function loadSessions() {
       transcript: fv(f.transcript) || '',
       summary:   fv(f.summary)   || '',
       notes:     fv(f.notes)     || '',
-      images:    f.images?.arrayValue?.values?.map(v => v.stringValue) || [],
+      imageObjs: null, // loaded lazily when notes tab opens
       isNotepad: f.isNotepad?.booleanValue || false,
     };
   }).sort((a, b) => b.timestamp - a.timestamp);
@@ -174,18 +172,58 @@ async function patchField(sessionId, fieldName, value) {
   });
 }
 
-async function uploadImageToStorage(sessionId, file) {
-  const ext      = file.name.split('.').pop() || 'png';
-  const filename = `images/${sessionId}/${Date.now()}.${ext}`;
-  const encoded  = encodeURIComponent(filename);
-  const url      = `${STORAGE_BASE}?name=${encoded}&uploadType=media&key=${FIREBASE_API_KEY}`;
+// Compress image to JPEG via canvas — keeps Firestore docs small
+async function compressImage(file, maxPx = 1200, quality = 0.72) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; };
+    img.onload = () => {
+      let { width: w, height: h } = img;
+      if (w > maxPx || h > maxPx) {
+        if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+        else       { w = Math.round(w * maxPx / h); h = maxPx; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = reject;
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Store image as base64 in Firestore subcollection: sessions/{id}/images/{imgId}
+async function uploadImageToFirestore(sessionId, file) {
+  const base64 = await compressImage(file);
+  const url = `${FIRESTORE_BASE}/sessions/${sessionId}/images?key=${FIREBASE_API_KEY}`;
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': file.type || 'image/png' },
-    body: file
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: {
+      data:      { stringValue: base64 },
+      name:      { stringValue: file.name || 'image' },
+      timestamp: { integerValue: String(Date.now()) },
+    }})
   });
-  if (!res.ok) throw new Error(`Storage upload failed: ${res.status}`);
-  return `${STORAGE_BASE}/${encoded}?alt=media`;
+  if (!res.ok) throw new Error(`Image save failed: ${res.status}`);
+  const doc = await res.json();
+  return { id: doc.name.split('/').pop(), data: base64 };
+}
+
+async function loadImagesForSession(sessionId) {
+  const res  = await fetch(`${FIRESTORE_BASE}/sessions/${sessionId}/images?key=${FIREBASE_API_KEY}`);
+  const data = await res.json();
+  if (!data.documents) return [];
+  return data.documents
+    .map(doc => ({ id: doc.name.split('/').pop(), data: fv(doc.fields?.data), ts: parseInt(fv(doc.fields?.timestamp)||'0') }))
+    .sort((a,b) => a.ts - b.ts);
+}
+
+async function deleteImageFromFirestore(sessionId, imageId) {
+  await fetch(`${FIRESTORE_BASE}/sessions/${sessionId}/images/${imageId}?key=${FIREBASE_API_KEY}`, { method: 'DELETE' });
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
@@ -215,13 +253,13 @@ function renderSessionList(sessions) {
         ${s.isNotepad
           ? `<span style="color:#9d97ff">notepad</span>`
           : `<span class="words">${s.wordCount.toLocaleString()} words</span>`}
-        ${s.images?.length ? `<span style="color:#9d97ff">${s.images.length} 🖼</span>` : ''}
+        ${s.imageObjs?.length ? `<span style="color:#9d97ff">${s.imageObjs.length} 🖼</span>` : ''}
       </div>
     </div>`).join('');
 }
 
 function renderImagesSection(session) {
-  const imgs = session.images || [];
+  const imgs = session.imageObjs || [];
   return `
     <div class="images-section">
       <div class="images-header">
@@ -234,10 +272,10 @@ function renderImagesSection(session) {
         Drag & drop images here, paste (Ctrl+V), or click to upload
       </div>
       <div class="image-grid" id="imageGrid">
-        ${imgs.map((url,i) => `
-          <div class="image-thumb" onclick="openLightbox('${url}')">
-            <img src="${url}" alt="screenshot ${i+1}" loading="lazy">
-            <button class="del-btn" onclick="deleteImage(event,'${session.id}',${i})">×</button>
+        ${imgs.map((img,i) => `
+          <div class="image-thumb" onclick="openLightbox('${img.data}')">
+            <img src="${img.data}" alt="screenshot ${i+1}" loading="lazy">
+            <button class="del-btn" onclick="deleteImage(event,'${session.id}','${img.id}',${i})">×</button>
           </div>`).join('')}
         ${imgs.length ? `<div class="add-more-thumb" onclick="triggerFileInput()">+</div>` : ''}
       </div>
@@ -318,6 +356,15 @@ function showTab(tab, btn) {
       }, 800);
     });
 
+    // Load images lazily when notes tab opens
+    const session = allSessions.find(s => s.id === activeId);
+    if (session && !session.imageObjs) {
+      loadImagesForSession(activeId).then(imgs => {
+        session.imageObjs = imgs;
+        refreshImageGrid(session);
+      });
+    }
+
     // Paste image support
     document.getElementById('notesTextarea').addEventListener('paste', e => {
       const items = [...(e.clipboardData?.items || [])];
@@ -364,16 +411,16 @@ function onDrop(e) {
 async function handleFiles(files) {
   if (!files.length || !activeId) return;
   const status = document.getElementById('uploadStatus');
-  if (status) { status.textContent = `Uploading ${files.length} image${files.length>1?'s':''}...`; }
+  if (status) { status.textContent = `Compressing & saving ${files.length} image${files.length>1?'s':''}...`; }
 
   const session = allSessions.find(s => s.id === activeId);
   if (!session) return;
+  if (!session.imageObjs) session.imageObjs = [];
 
   for (const file of files) {
     try {
-      const url = await uploadImageToStorage(activeId, file);
-      session.images = [...(session.images || []), url];
-      await patchField(activeId, 'images', session.images);
+      const imgObj = await uploadImageToFirestore(activeId, file);
+      session.imageObjs.push(imgObj);
       refreshImageGrid(session);
     } catch (err) {
       if (status) status.textContent = 'Upload failed: ' + err.message;
@@ -392,23 +439,23 @@ function refreshImageGrid(session) {
   const grid     = document.getElementById('imageGrid');
   const dropZone = document.getElementById('dropZone');
   if (!grid) return;
-  const imgs = session.images || [];
+  const imgs = session.imageObjs || [];
   if (dropZone) dropZone.classList.toggle('has-images', imgs.length > 0);
-  grid.innerHTML = imgs.map((url, i) => `
-    <div class="image-thumb" onclick="openLightbox('${url}')">
-      <img src="${url}" alt="screenshot ${i+1}" loading="lazy">
-      <button class="del-btn" onclick="deleteImage(event,'${session.id}',${i})">×</button>
+  grid.innerHTML = imgs.map((img, i) => `
+    <div class="image-thumb" onclick="openLightbox('${img.data}')">
+      <img src="${img.data}" alt="screenshot ${i+1}" loading="lazy">
+      <button class="del-btn" onclick="deleteImage(event,'${session.id}','${img.id}',${i})">×</button>
     </div>`).join('') +
     (imgs.length ? `<div class="add-more-thumb" onclick="triggerFileInput()">+</div>` : '');
 }
 
-async function deleteImage(e, sessionId, index) {
+async function deleteImage(e, sessionId, imageId, index) {
   e.stopPropagation();
   if (!confirm('Remove this image?')) return;
   const session = allSessions.find(s => s.id === sessionId);
   if (!session) return;
-  session.images.splice(index, 1);
-  await patchField(sessionId, 'images', session.images);
+  await deleteImageFromFirestore(sessionId, imageId);
+  session.imageObjs.splice(index, 1);
   refreshImageGrid(session);
   renderSessionList(filterSessions(document.getElementById('searchInput').value));
 }
