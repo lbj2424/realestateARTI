@@ -357,7 +357,6 @@ function showTab(tab, btn) {
     });
 
     // Load images lazily when notes tab opens
-    const session = allSessions.find(s => s.id === activeId);
     if (session && !session.imageObjs) {
       loadImagesForSession(activeId).then(imgs => {
         session.imageObjs = imgs;
